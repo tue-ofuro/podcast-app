@@ -27,15 +27,17 @@ class RainbowViewManager : SimpleViewManager<RainbowView>() {
     }
 
     override fun getCommandsMap(): Map<String, Int> {
-        return mapOf("start" to COMMAND_START, "stop" to COMMAND_STOP)
+        return mapOf(
+            "start" to COMMAND_START,
+            "stop" to COMMAND_STOP
+        )
     }
 
     override fun receiveCommand(view: RainbowView, commandId: String?, args: ReadableArray?) {
-        super.receiveCommand(view, commandId, args)
-        
-        when (commandId?.toInt()) {
-            COMMAND_START -> view.startChangeColor()
-            COMMAND_STOP -> view.stopChangeColor()
+        // コマンドIDは getCommandsMap() のキー（"start", "stop"）で送られる
+        when (commandId) {
+            "start" -> view.startChangeColor()
+            "stop" -> view.stopChangeColor()
         }
     }
 
