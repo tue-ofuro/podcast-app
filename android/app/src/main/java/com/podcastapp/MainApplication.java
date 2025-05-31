@@ -6,6 +6,8 @@ import com.facebook.react.ReactApplication;
 import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
+import com.facebook.react.PackageList; // 追加
+import com.podcastapp.MyAppPackage;    // 追加
 
 import java.util.List;
 
