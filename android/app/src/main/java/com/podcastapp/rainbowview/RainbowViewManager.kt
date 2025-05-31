@@ -1,14 +1,20 @@
 package com.podcastapp.rainbowview
 
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.common.MapBuilder
 import com.facebook.react.uimanager.SimpleViewManager
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.annotations.ReactProp
 
 class RainbowViewManager : SimpleViewManager<RainbowView>() {
-    
+
+    companion object {
+        const val COMMAND_START_ANIMATION = "start"
+        const val COMMAND_STOP_ANIMATION = "stop"
+    }
+
     override fun getName(): String {
-        return "RainbowView"
+        return "RainbowView" // JavaScript側で参照する名前
     }
 
     override fun createViewInstance(reactContext: ThemedReactContext): RainbowView {
@@ -16,45 +22,35 @@ class RainbowViewManager : SimpleViewManager<RainbowView>() {
     }
 
     @ReactProp(name = "updateMillis", defaultInt = 1000)
-    fun setUpdateMillis(view: RainbowView, updateMillis: Int) {
-        view.updateMillis = updateMillis
+    fun setUpdateMillis(view: RainbowView, millis: Int) {
+        view.updateMillis = millis
     }
 
-    override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any> {
-        return mutableMapOf(
-            "onColorChanged" to mutableMapOf("registrationName" to "onColorChanged")
+    // onColorChangedイベントをJavaScriptに公開
+    override fun getExportedCustomDirectEventTypeConstants(): MutableMap<String, Any>? {
+        return MapBuilder.builder<String, Any>()
+            .put("onColorChanged", MapBuilder.of("registrationName", "onColorChanged"))
+            .build()
+    }
+
+    // JavaScriptからのコマンドを受け取る
+    override fun getCommandsMap(): Map<String, Int>? {
+        return MapBuilder.of(
+            COMMAND_START_ANIMATION, COMMAND_START_ANIMATION.hashCode(),
+            COMMAND_STOP_ANIMATION, COMMAND_STOP_ANIMATION.hashCode()
         )
     }
 
-    override fun getCommandsMap(): Map<String, Int> {
-        return mapOf(
-            "start" to COMMAND_START,
-            "stop" to COMMAND_STOP
-        )
-    }
-
-    override fun receiveCommand(view: RainbowView, commandId: String?, args: ReadableArray?) {
-        // コマンドIDは getCommandsMap() のキー（"start", "stop"）で送られる
+    override fun receiveCommand(root: RainbowView, commandId: String?, args: ReadableArray?) {
         when (commandId) {
-            "start" -> view.startChangeColor()
-            "stop" -> view.stopChangeColor()
+            COMMAND_START_ANIMATION -> root.startChangeColor()
+            COMMAND_STOP_ANIMATION -> root.stopChangeColor()
         }
     }
 
+    // ビューが破棄されるときにアニメーションを停止
     override fun onDropViewInstance(view: RainbowView) {
-        view.stopChangeColor()
         super.onDropViewInstance(view)
-    }
-
-    override fun getExportedViewConstants(): Map<String, Any> {
-        return mapOf(
-            "DEFAULT_UPDATE_MILLIS" to 1000,
-            "FAST_UPDATE_MILLIS" to 500
-        )
-    }
-
-    companion object {
-        private const val COMMAND_START = 1
-        private const val COMMAND_STOP = 2
+        view.stopChangeColor()
     }
 }
