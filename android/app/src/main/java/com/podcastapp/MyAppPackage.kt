@@ -12,8 +12,6 @@ class MyAppPackage : ReactPackage {
     }
 
     override fun createViewManagers(reactContext: ReactApplicationContext): List<ViewManager<*, *>> {
-        return listOf(
-            RainbowViewManager() // RainbowViewManagerをリストに追加
-        )
+        return listOf(RainbowViewManager()) // RainbowViewManagerをリストに追加
     }
 }

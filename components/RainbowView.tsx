@@ -1,82 +1,94 @@
-import React from "react";
+import React, { forwardRef, useImperativeHandle, useRef } from "react";
 import {
   requireNativeComponent,
   UIManager,
   findNodeHandle,
-  ViewProps,
-  NativeSyntheticEvent,
-  View,
+  ViewStyle,
   Platform,
+  View,
 } from "react-native";
 
-interface ColorChangedData {
-  color: string;
+interface NativeRainbowViewProps {
+  style?: ViewStyle;
+  updateMillis?: number;
+  onColorChanged?: (event: { nativeEvent: { color: string } }) => void;
 }
 
-interface RainbowViewProps extends ViewProps {
+export interface RainbowViewProps {
+  style?: ViewStyle;
   updateMillis?: number;
-  onColorChanged?: (e: NativeSyntheticEvent<ColorChangedData>) => void;
+  onColorChanged?: (event: { nativeEvent: { color: string } }) => void;
 }
 
 export const RAINBOW_CONSTANTS = {
-  DEFAULT_UPDATE_MILLIS:
-    (UIManager as any).RainbowView?.Constants?.DEFAULT_UPDATE_MILLIS || 1000,
-  FAST_UPDATE_MILLIS:
-    (UIManager as any).RainbowView?.Constants?.FAST_UPDATE_MILLIS || 500,
+  DEFAULT_UPDATE_MILLIS: 100,
+  FAST_UPDATE_MILLIS: 50,
 };
 
-let NativeRainbowView: any;
-
-// Only require native component on Android
-if (Platform.OS === "android") {
-  try {
-    NativeRainbowView = requireNativeComponent<RainbowViewProps>("RainbowView");
-  } catch (error) {
-    console.warn("RainbowView native component not found, using fallback");
-    NativeRainbowView = View;
+// requireNativeComponent for RainbowView
+let NativeRainbowView: any = null;
+try {
+  if (Platform.OS === "android") {
+    NativeRainbowView =
+      requireNativeComponent<NativeRainbowViewProps>("RainbowView");
   }
-} else {
-  NativeRainbowView = View;
+} catch (error) {
+  console.warn("RainbowView native component not available:", error);
 }
 
-export const RainbowView = React.forwardRef<any, RainbowViewProps>(
-  (props, ref) => {
-    if (Platform.OS === "android" && NativeRainbowView !== View) {
-      return <NativeRainbowView {...props} ref={ref} />;
-    }
+export const RainbowView = forwardRef<any, RainbowViewProps>((props, ref) => {
+  const viewRef = useRef<View>(null);
 
-    // Fallback for non-Android or when native component is not available
+  useImperativeHandle(ref, () => ({
+    startAnimation: () => {
+      if (Platform.OS === "android" && viewRef.current && NativeRainbowView) {
+        try {
+          UIManager.dispatchViewManagerCommand(
+            findNodeHandle(viewRef.current),
+            "start",
+            []
+          );
+        } catch (error) {
+          console.warn("Failed to start animation:", error);
+        }
+      }
+    },
+    stopAnimation: () => {
+      if (Platform.OS === "android" && viewRef.current && NativeRainbowView) {
+        try {
+          UIManager.dispatchViewManagerCommand(
+            findNodeHandle(viewRef.current),
+            "stop",
+            []
+          );
+        } catch (error) {
+          console.warn("Failed to stop animation:", error);
+        }
+      }
+    },
+  }));
+
+  if (Platform.OS !== "android" || !NativeRainbowView) {
+    // Fallback for non-Android platforms or when native component is not available
     return (
       <View
-        {...props}
-        ref={ref}
-        style={[
-          props.style,
-          { backgroundColor: "#ff0000" }, // Static color as fallback
-        ]}
+        style={[{ backgroundColor: "#ff0000" }, props.style]}
+        ref={viewRef}
       />
     );
   }
-);
 
-export const startRainbowAnimation = (viewRef: React.RefObject<any>) => {
-  const viewId = findNodeHandle(viewRef.current);
-  if (viewId) {
-    UIManager.dispatchViewManagerCommand(
-      viewId,
-      "startRainbow", // COMMAND_START
-      []
-    );
+  return <NativeRainbowView {...props} ref={viewRef} />;
+});
+
+export const startRainbowAnimation = (ref: React.RefObject<any>) => {
+  if (ref.current?.startAnimation) {
+    ref.current.startAnimation();
   }
 };
 
-export const stopRainbowAnimation = (viewRef: React.RefObject<any>) => {
-  const viewId = findNodeHandle(viewRef.current);
-  if (viewId) {
-    UIManager.dispatchViewManagerCommand(
-      viewId,
-      "stopRainbow", // COMMAND_STOP
-      []
-    );
+export const stopRainbowAnimation = (ref: React.RefObject<any>) => {
+  if (ref.current?.stopAnimation) {
+    ref.current.stopAnimation();
   }
 };
