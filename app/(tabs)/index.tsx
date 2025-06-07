@@ -1,144 +1,57 @@
+import MusicPlayerView from "@/components/MusicPlayerView";
 import { Image } from "expo-image";
-import { Platform, StyleSheet, View, Button } from "react-native";
-import { useState, useRef } from "react";
-
-import { HelloWave } from "@/components/HelloWave";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import {
-  RainbowView,
-  startRainbowAnimation,
-  stopRainbowAnimation,
-  RAINBOW_CONSTANTS,
-} from "@/components/RainbowView";
+import { ScrollView, StyleSheet, Text, View } from "react-native";
 
 export default function HomeScreen() {
-  const [isAnimating, setIsAnimating] = useState(true);
-  const [currentColor, setCurrentColor] = useState("#ff0000");
-  const [updateInterval, setUpdateInterval] = useState(
-    RAINBOW_CONSTANTS.DEFAULT_UPDATE_MILLIS
-  );
-  const rainbowViewRef = useRef(null);
-
-  const handleStartStop = () => {
-    if (isAnimating) {
-      stopRainbowAnimation(rainbowViewRef);
-      setIsAnimating(false);
-    } else {
-      startRainbowAnimation(rainbowViewRef);
-      setIsAnimating(true);
-    }
-  };
-
-  const handleColorChanged = (event: any) => {
-    const color = event.nativeEvent.color;
-    setCurrentColor(color);
-    console.log("Color changed to:", color);
-  };
-
-  const toggleSpeed = () => {
-    const newInterval =
-      updateInterval === RAINBOW_CONSTANTS.DEFAULT_UPDATE_MILLIS
-        ? RAINBOW_CONSTANTS.FAST_UPDATE_MILLIS
-        : RAINBOW_CONSTANTS.DEFAULT_UPDATE_MILLIS;
-    setUpdateInterval(newInterval);
-  };
-
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: "#A1CEDC", dark: "#1D3D47" }}
-      headerImage={
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.headerContainer}>
         <Image
           source={require("@/assets/images/partial-react-logo.png")}
           style={styles.reactLogo}
         />
-      }
-    >
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
+      </View>
 
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Native Rainbow View Demo</ThemedText>
-        <ThemedText>
-          This is a native Android component that changes colors automatically!
-        </ThemedText>
-        <ThemedText>Current Color: {currentColor}</ThemedText>
-        <ThemedText>Update Interval: {updateInterval}ms</ThemedText>
-
-        <RainbowView
-          ref={rainbowViewRef}
-          style={styles.rainbowView}
-          updateMillis={updateInterval}
-          onColorChanged={handleColorChanged}
-        />
-
-        <View style={styles.buttonContainer}>
-          <Button
-            title={isAnimating ? "Stop Animation" : "Start Animation"}
-            onPress={handleStartStop}
-          />
-          <Button
-            title={`Switch to ${
-              updateInterval === RAINBOW_CONSTANTS.DEFAULT_UPDATE_MILLIS
-                ? "Fast"
-                : "Normal"
-            }`}
-            onPress={toggleSpeed}
-          />
-        </View>
-      </ThemedView>
-
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit{" "}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText>{" "}
-          to see changes. Press{" "}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: "cmd + d",
-              android: "cmd + m",
-              web: "F12",
-            })}
-          </ThemedText>{" "}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">
-            npm run reset-project
-          </ThemedText>{" "}
-          to get a fresh <ThemedText type="defaultSemiBold">app</ThemedText>{" "}
-          directory. This will move the current{" "}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{" "}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      <View style={styles.titleContainer}>
+        <Text style={styles.title}>Music Player</Text>
+      </View>
+      <MusicPlayerView
+        style={{
+          width: 250,
+          height: 180,
+          marginBottom: 32,
+        }}
+        sourceUrl="https://anchor.fm/s/2b3dd74c/podcast/play/34449268/https%3A%2F%2Fd3ctxlq1ktw2nl.cloudfront.net%2Fstaging%2F2021-4-29%2F00b5e94b-02b8-b094-c1f8-0291b6f4708b.mp3"
+      />
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: "row",
-    alignItems: "center",
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
+  contentContainer: {
+    paddingHorizontal: 16,
+    paddingBottom: 20,
+  },
+  headerContainer: {
+    height: 200,
+    position: "relative",
+    marginHorizontal: -16,
+    marginBottom: 16,
+  },
+  titleContainer: {
+    marginBottom: 24,
+    alignItems: "center",
+  },
+  title: {
+    fontSize: 32,
+    fontWeight: "bold",
+    lineHeight: 32,
   },
   reactLogo: {
     height: 178,
@@ -146,16 +59,5 @@ const styles = StyleSheet.create({
     bottom: 0,
     left: 0,
     position: "absolute",
-  },
-  rainbowView: {
-    height: 100,
-    marginVertical: 10,
-    borderRadius: 8,
-  },
-  buttonContainer: {
-    flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 10,
-    gap: 10,
   },
 });
