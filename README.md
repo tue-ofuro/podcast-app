@@ -1,41 +1,41 @@
-# Welcome to your Expo app 👋
+# Expo アプリへようこそ 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+これは [`create-expo-app`](https://www.npmjs.com/package/create-expo-app) で作成された [Expo](https://expo.dev) プロジェクトです。
 
-## Get started
+## 始め方
 
-1.  Generate native Android/iOS project files (if not already present or if you need to regenerate them):
+1.  ネイティブの Android/iOS プロジェクトファイルを生成（まだない場合や再生成が必要な場合）：
 
     ```bash
     npx expo prebuild
     ```
 
-2.  Restore custom native modules:
+2.  カスタムネイティブモジュールを復元：
 
     ```bash
     sh scripts/restore-native.sh
     ```
 
-3.  Build and run the app on Android:
+3.  Android でアプリをビルドして実行：
     ```bash
     npx expo run:android
     ```
 
-In the output, you'll find options to open the app in a
+出力には、以下でアプリを開くオプションが表示されます：
 
 - [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+- [Android エミュレーター](https://docs.expo.dev/workflow/android-studio-emulator/)
+- [iOS シミュレーター](https://docs.expo.dev/workflow/ios-simulator/)
+- [Expo Go](https://expo.dev/go)（Expo での アプリ開発を試すための限定的なサンドボックス）
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+**app** ディレクトリ内のファイルを編集することで開発を始められます。このプロジェクトは[ファイルベースルーティング](https://docs.expo.dev/router/introduction)を使用しています。
 
-## Get a fresh project
+## 新しいプロジェクトを始める
 
-When you're ready, run:
+準備ができたら、以下を実行してください：
 
 ```bash
 npm run reset-project
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+このコマンドは、スターターコードを **app-example** ディレクトリに移動し、開発を始められる空の **app** ディレクトリを作成します。
