@@ -13,7 +13,6 @@ class MusicPlayerViewManager(
     private val reactContext: ReactApplicationContext
 ) : SimpleViewManager<FrameLayout>() {
     private val TAG = "MusicPlayerDebug"
-    private val REACT_CLASS = "MusicPlayerView"
 
     override fun getName() = "MusicPlayerView"
 
